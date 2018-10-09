@@ -25,12 +25,13 @@ Mid-point check-in:
 ## Week 2
 
 SPI memory:
-- () () understand what's going on with SPI memory in general
-- () () complete `spimemeory.v`
-- () () create finite state machine
-- () () SPI memory testing with FPGA
+- (0h30m) (Friday, 12 Oct) understand what's going on with SPI memory in general
+- (0h45m) (Sunday, 14 Oct) create finite state machine
+- (0h20m) (Sunday, 14 Oct) diagram SPI
+- (2h30m) (Wednesday, 17 Oct) complete `spimemeory.v`
+- (1h30m) (Wednesday, 17 Oct) SPI memory testing with FPGA
 
 Report:
-- () () stuff from Week 1 section
-- () () finite state machine diagram and control table
-- () () SPI memory testing strategy
+- (0h30m) (Thursday, 18 Oct) stuff from Week 1 section
+- (0h30m) (Thursday, 18 Oct) finite state machine diagram and control table
+- (0h30m) (Thursday, 18 Oct) SPI memory testing strategy
