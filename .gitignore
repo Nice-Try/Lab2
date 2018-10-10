@@ -1,0 +1,7 @@
+### Ignore files without extensions
+# Ignore all
+*
+# Unignore things with file extensions and directories
+!*.*
+!*/
+###
