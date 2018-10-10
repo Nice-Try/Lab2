@@ -19,7 +19,22 @@ output              serialDataOut       // Positive edge synchronized
 );
 
     reg [width-1:0]      shiftregistermem;
+
+    // Set parallel and serial out
+    assign parallelDataOut = shiftregistermem;
+    assign serialDataOut = shiftregistermem[width-1];
+
     always @(posedge clk) begin
-        // Your Code Here
+        // When parallelLoad is asserted, load parallelDataIn
+        if (parallelLoad) begin
+            shiftregistermem <= parallelDataIn;
+        end
+
+        // At peripheral clock edge, shift
+        // Not sure if this actually works? unclear to me how always blocks work
+        else if (peripheralClkEdge) begin
+            shiftregistermem = {shiftregistermem[width-2:0], serialDataIn};
+        end
     end
+
 endmodule
