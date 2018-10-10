@@ -17,7 +17,7 @@ module testshiftregister();
   // Instantiate helper vars
   reg dutpassed = 1;
   reg [3:0] i;
-  reg [7:0] inputVal = 8'b10010101;
+  reg [7:0] inputVal = 8'b10010100;
 
   // Instantiate DUT with parameter width = 8
   shiftregister #(8) dut(.clk(clk),
@@ -61,7 +61,7 @@ module testshiftregister();
       end
     end
 
-    // Starting with 0s, shift in the input val (10010101)
+    // Starting with 0s, shift in the input val (10010100)
     parallelLoad = 1; parallelDataIn = 0; #20
     parallelLoad = 0;
     for (i=0; i<8; i=i+1) begin
@@ -83,6 +83,7 @@ module testshiftregister();
       $display("Tests completed");
     end
 
+    $finish();
   end
 
 endmodule
