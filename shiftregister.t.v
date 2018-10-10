@@ -36,6 +36,7 @@ module testshiftregister();
     $display("Begin testing register.v");
 
     // Test parallel load
+    // This also shows that parallel load has priority over serial load
     parallelLoad = 1; parallelDataIn = inputVal; serialDataIn = 1; #20
     if (parallelDataOut !== parallelDataIn) begin
       $display("Test parallel load failed");
@@ -74,10 +75,6 @@ module testshiftregister();
         dutpassed = 0;
       end
     end
-
-    // Missing test: does parallelLoad or serial shift win if they both happen
-    // in the same clock edge?
-    $display("To be implemented: test priority of parallelLoad and serial shift");
 
     // Show if tests passed
     if (dutpassed) begin
