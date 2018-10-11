@@ -87,7 +87,7 @@ module fpga_wrapper
 (
     input        clk,
     input  [2:0] sw,
-    input        btn,
+    input  [1:0] btn,
     output [3:0] led
 );
     // Instantiate vars for midpoint module
@@ -103,7 +103,7 @@ module fpga_wrapper
     mux2 #(4) output_select(.in0(parallelDataOut[3:0]), .in1(parallelDataOut[7:4]), .sel(sw[2]), .out(led));
 
     midpoint mod(.clk(clk),
-                 .parallelLoad(btn),
+                 .parallelLoad(btn[0]),
                  .parallelDataIn(parallelDataIn),
                  .serialDataIn(sw[0]),
                  .peripheralClkEdge(sw[1]),
