@@ -33,10 +33,10 @@ module testFSM();
   $display("Output     Result     Expected");
   repeat (100) begin
     #20
-    $display("miso_buff: %b         %b", miso_buff, 1'b1);
-    $display("dm_we:     %b         %b", dm_we, 1'b1);
-    $display("addr_we:   %b         %b", addr_we, 1'b1);
-    $display("sr_we:     %b         %b", sr_we, 1'b1);
+    $display("miso_buff: %b         %b", miso_buff, 1'b0);
+    $display("dm_we:     %b         %b", dm_we, 1'b0);
+    $display("addr_we:   %b         %b", addr_we, 1'b0);
+    $display("sr_we:     %b         %b", sr_we, 1'b0);
     $display("----------------------");
   end
   $finish();
