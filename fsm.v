@@ -1,7 +1,7 @@
 // Finite State Machine for SPI
 
 module FSM(
-  input clk,
+  input sclk_edge,
   input CS, // chip select
   input shiftRegOutP0, // R/W bit
   output reg miso_buff, // master in slave out buffer
@@ -21,71 +21,113 @@ module FSM(
   localparam FINAL = 3'b110;
   reg counter = 0;
 
-  always @(posedge clk) begin
-    counter = counter + 1;
+  always @(posedge sclk_edge) begin
     if (CS == 0) begin
       state <= FINAL;
       counter = 0;
     end
     else begin
+      counter = counter + 1;
       case(state)
+
         FINAL: begin
-          if (CS == 1) begin
-            state <= ADDR;
-          end
-          else begin
-            miso_buff = 0;
-            dm_we = 0;
-            addr_we = 0;
-            sr_we = 0;
-          end
+          state <= ADDR;
         end
+
         ADDR: begin
-          miso_buff = 0;
-          dm_we = 0;
-          addr_we = 1;
-          sr_we = 0;
           if (counter == 7)
             state <= RW;
         end
+
+        RW: begin
+          if (counter == 8) begin
+            if (shiftRegOutP0 == 1)
+              state <= READ_LOAD;
+            else
+              state <= WRITE;
+          end
+        end
+
+        READ_LOAD: begin
+          if (counter == 9)
+            state <= READ;
+        end
+
+        WRITE: begin
+          if (counter == 14)
+            state <= WRITE_DM;
+        end
+
+        READ: begin
+          if (counter == 15) begin
+            state <= ADDR;
+            counter = 0;
+          end
+        end
+
+        WRITE_DM: begin
+          if (counter == 15) begin
+            state <= ADDR;
+            counter = 0;
+          end
+        end
+
+      endcase
+      end
+    end
+
+    always @(state) begin
+      case(state)
+
+        FINAL: begin
+          miso_buff = 0;
+          dm_we = 0;
+          addr_we = 0;
+          sr_we = 0;
+        end
+
+        ADDR: begin
+          miso_buff = 0;
+          dm_we = 0;
+          addr_we = 0;
+          sr_we = 0;
+        end
+
         RW: begin
           miso_buff = 0;
           dm_we = 0;
           addr_we = 1;
           sr_we = 0;
-          if (shiftRegOutP0 == 1)
-            state <= READ_LOAD;
-          else
-            state <= WRITE;
         end
+
         READ_LOAD: begin
           miso_buff = 1;
           dm_we = 0;
           addr_we = 0;
           sr_we = 1;
-          state <= READ;
         end
+
         WRITE: begin
           miso_buff = 0;
           dm_we = 0;
           addr_we = 0;
           sr_we = 0;
-          if (counter == 14)
-            state <= WRITE_DM;
         end
+
         READ: begin
           miso_buff = 1;
           dm_we = 0;
           addr_we = 0;
           sr_we = 0;
         end
+
         WRITE_DM: begin
           miso_buff = 0;
           dm_we = 1;
           addr_we = 0;
           sr_we = 0;
         end
+
       endcase
-      end
     end
 endmodule
