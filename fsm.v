@@ -22,11 +22,11 @@ module FSM(
   reg counter = 0;
 
   always @(posedge sclk_edge) begin
-    if (CS == 0) begin
+    if (CS == 1) begin
       state <= FINAL;
       counter = 0;
     end
-    else begin
+    if (CS == 0) begin
       counter = counter + 1;
       case(state)
 
