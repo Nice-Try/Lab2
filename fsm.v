@@ -19,7 +19,7 @@ module FSM(
   localparam READ = 3'b100;
   localparam WRITE_DM = 3'b101;
   localparam FINAL = 3'b110;
-  reg counter = 0;
+  reg [5:0] counter = 0;
 
   always @(posedge sclk_edge) begin
     if (CS == 1) begin
