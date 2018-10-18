@@ -26,7 +26,7 @@ module FSM(
       state <= FINAL;
       counter = 0;
     end
-    if (CS == 0) begin
+    else begin
       counter = counter + 1;
       case(state)
 
@@ -35,12 +35,12 @@ module FSM(
         end
 
         ADDR: begin
-          if (counter == 7)
+          if (counter == 8)
             state <= RW;
         end
 
         RW: begin
-          if (counter == 8) begin
+          if (counter == 9) begin
             if (shiftRegOutP0 == 1)
               state <= READ_LOAD;
             else
@@ -49,26 +49,26 @@ module FSM(
         end
 
         READ_LOAD: begin
-          if (counter == 9)
+          if (counter == 10)
             state <= READ;
         end
 
         WRITE: begin
-          if (counter == 14)
+          if (counter == 16)
             state <= WRITE_DM;
         end
 
         READ: begin
-          if (counter == 15) begin
+          if (counter == 17) begin
             state <= ADDR;
-            counter = 0;
+            counter = 1;
           end
         end
 
         WRITE_DM: begin
-          if (counter == 15) begin
+          if (counter == 17) begin
             state <= ADDR;
-            counter = 0;
+            counter = 1;
           end
         end
 
