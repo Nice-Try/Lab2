@@ -41,3 +41,6 @@ These are the steps a test engineer should follow to verify that our midpoint mo
  - Switch 1 on to send peripheral clock edge, which inputs the serial data
  - repeat this until 8 bits have been inputted
  - See result and expect the same values as what was inputted. Use switch 2 to toggle between seeing the 4 LSBs and the 4 MSBs
+ 
+ ## Finite State Machine
+ ![Finite State Machine Diagram](https://image.ibb.co/fC01o0/fsm-diagram.png)
