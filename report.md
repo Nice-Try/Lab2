@@ -43,4 +43,21 @@ These are the steps a test engineer should follow to verify that our midpoint mo
  - See result and expect the same values as what was inputted. Use switch 2 to toggle between seeing the 4 LSBs and the 4 MSBs
  
  ## Finite State Machine
- ![Finite State Machine Diagram](https://image.ibb.co/fC01o0/fsm-diagram.png)
+ ![Finite State Machine Diagram](https://image.ibb.co/mfthff/fsm-diagram.png)
+ 
+ Our Finite State Machine determines the control signals miso_buff, dm_we, addr_we, and sr_we based on what state its in. The flow between states is shown in the above diagram. The FSM ensures that the SPI is doing the right things at the right time, and it does that by keeping track of how many clock cycles have gone by using a counter. When Chip Select goes low for the first time, it goes into the first state ADDR. At this point, the MOSI is sending 7 bits for the address. It stays in this state until the counter is 8 and the full address has gone by. The next bit is the R/W bit or the ShiftRegOutP[0] value, which determines whether the SPI should be reading or writing. When this bit is 1, it will read, otherwise it will write. 
+ 
+ Up until this point, both paths have been identical, but once it starts reading or writing, the paths diverge. In the read case, it is in the state read_load for one clock cycle, and then it reads the bits until the 16th clock cycle. For the write case, it doesn't write to the data memory until the very end so write only goes to write_dm on the 15th clock cycle. Finally, if CS is still high, the next state will be addr again, otherwise it will go to the final state and stay there until it changes again. The counter and all outputs are set to 0. 
+ 
+ The outputs for each control signal for a given state are shown in the table below.
+
+| Current State | ADDR |         RW         | READ_LOAD |      READ      |   WRITE  |    WRITE_DM    | FINAL |
+|---------------|------|:------------------:|:---------:|:--------------:|:--------:|:--------------:|:-----:|
+| CS            | 0    | 0                  | 0         | 0 or 1         | 0        | 0 or 1         | 1     |
+| ShiftRegP[0]  | X    | 0 or 1             | 1         | 1              | 0        | 0              | X     |
+| Counter       | 1-7  | 8                  |  10       | 16             | 10       | 16             | 0     |
+| miso_buff     | 0    | 0                  | 1         | 1              | 0        | 0              | 0     |
+| dm_we         | 0    | 0                  | 0         | 0              | 0        | 1              | 0     |
+| addr_we       | 0    | 1                  | 0         | 0              | 0        | 0              | 0     |
+| sr_we         | 0    | 0                  | 1         | 0              | 0        | 0              | 0     |
+| Next State    | RW   | READ_LOAD or WRITE | READ      | FINAL  or ADDR | WRITE_DM | FINAL  or ADDR | ADDR  |
