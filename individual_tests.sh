@@ -1,5 +1,5 @@
 #! /bin/bash
 
-iverilog -o inputconditioner.vvp inputconditioner.t.v
-iverilog -o shiftregister.vvp shiftregister.t.v
-iverilog -o fsm.vvp fsm.t.v
+iverilog -o inputconditioner.vvp inputconditioner.t.v & ./inputconditioner.vvp
+iverilog -o shiftregister.vvp shiftregister.t.v& ./shiftregister.vvp
+iverilog -o fsm.vvp fsm.t.v& ./fsm.vvp
