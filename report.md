@@ -43,7 +43,7 @@ These are the steps a test engineer should follow to verify that our midpoint mo
 
 ## Finite State Machine
 
-![Finite State Machine Diagram](https://image.ibb.co/mfthff/fsm-diagram.png)
+![Finite State Machine Diagram](https://image.ibb.co/nxGY30/fsm-diagram.png)
 
 Our Finite State Machine determines the control signals `miso_buff` (MISO buffer), `dm_we` (write enable for data memory), `addr_we` (write enable for address latch), and `sr_we` (write enable/parallel load for shift register) based on what state it is in. The flow between states is shown in the above diagram. The FSM ensures that the SPI is doing the right things at the right time, and it does that by keeping track of how many serial clock cycles have gone by using a counter. Because we are using a counter, this is not a pure state machine. When Chip Select goes low for the first time, it goes into the first state `ADDR`. At this point, the MOSI pin is sending 7 bits for the address. It stays in this state until the counter is 8 and the full address has gone by. The next bit is the `R/~W` bit or the `ShiftRegOutP[0]` value, which determines whether the SPI should be reading or writing. When this bit is 1, it will read, otherwise it will write.
 
