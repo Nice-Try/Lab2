@@ -68,16 +68,37 @@ The outputs for each control signal for a given state are shown in the table bel
 
 ### Test Sequence
 These are the steps a test engineer should follow to verify that our SPI module works as intended on an FPGA.
-Our switches are: 0. Chip Select, 1. Serial Clock, 2. MOSI
+Our switches are: 
+- 0: Chip Select
+- 1: Serial Clock
+- 2: MOSI
+
+Our LEDs are:
+- 0: MISO
+- 1: `addr_we` OR `sr_we`
+- 2: `dm_we`
+- 3: `miso_buff`
+
 1. Write to an Address
- - Toggle Switch 0 so that it is off, sending a 0 for chip select
- - Enter the address to write to by flipping switch 3 on or off if you want a 1 or 0, and turning switch 1 on in between each number to send each bit. For testing purposes use the address: 0000001. The address should only be 7 bits long.
- - Flip Switch 2 off (and then Switch 1 to send the bit) in order to send a 0 as the R/W bit. This tells the SPI that it will be writing to the data memory.
- - Using Switches 1 and 2, input the data you want to write. For the test: 0110101.
+ - Turn Chip Select off to send a 0
+ - Enter the address to write to by flipping the MISO switch on or off based on if you want a 1 or 0. To send each bit, cycle serial clock. Do this for each bit in the 7 bit address.
+ - Turn MOSI off to send a 0 as the R/~W bit. This tells the SPI that it will be writing to the data memory.
+ - Enter your data in the same way as the address using the MISO and serial clock switches. The data is 8-bits long.
+ - While entering the data, LED[3:1] indicate the current state of the SPI. After the first cycle for the first data bit, LED[3:1] should be 000. For the 8th cycle 010, and when the entire operation is done it will be 000 again. 
  
-2. Read from that Address
-
-
+2. Read from an Address
+ - Turn Chip Select off to send a 0
+ - Enter the address to write to by flipping the MISO switch on or off based on if you want a 1 or 0. To send each bit, cycle serial clock. Do this for each bit in the 7 bit address.
+ - Turn MOSI on to send a 1 as the R/~W bit. This tells the SPI that it will be reading from the data memory.
+ - Cycle the serial clock 8 times, making note of the state LED[0] after each cycle. Those 8 values of LED[0] are the data from data memory at the address given. After the first cycle, LED[3:1] should read 101; the remaining 7 cycles it should read 100. After the read operation is complete, LED[3:0] should be 000. 
+ 
+ Use these steps to check the following test cases.
+ 
+ 1. Write Data: 10101010 to Address: 0000001. Read the data at this address. You should expect to see 10101010 as the output.
+ 2. Read the data at the Address: 0101010. You should expect to see all 0's because no data should be written to this address.
+ 3. Write Data: 00110010 to Address: 0001000 but turn on Chip Select in the middle of the process. This should make the SPI go back to its idle state and LED[3:1] should be 000. 
+ 
+ 
 ## Work Plan Reflection
 
 ### Week 1
