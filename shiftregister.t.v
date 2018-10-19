@@ -44,6 +44,12 @@ module testshiftregister();
       $display("Actual:   %b", parallelDataOut);
       dutpassed = 0;
     end
+    if (serialDataOut !== parallelDataOut[7]) begin
+      $display("Test parallel load failed");
+      $display("Expected: %b", parallelDataOut[7]);
+      $display("Actual:   %b", serialDataOut);
+      dutpassed = 0;
+    end
 
     // Shift in 1s to see if that works
     serialDataIn = 1; parallelDataIn = 0; parallelLoad = 0; #20
@@ -59,6 +65,12 @@ module testshiftregister();
         $display("Actual:   %b", parallelDataOut);
         dutpassed = 0;
       end
+      if (serialDataOut !== parallelDataOut[7]) begin
+        $display("Test shift left 1s failed");
+        $display("Expected: %b", parallelDataOut[7]);
+        $display("Actual:   %b", serialDataOut);
+        dutpassed = 0;
+      end
     end
 
     // Starting with 0s, shift in the input val (10010100)
@@ -72,6 +84,12 @@ module testshiftregister();
         $display("Test serial in failed");
         $display("Expected: %b", (inputVal >> (7-i)));
         $display("Actual:   %b", parallelDataOut);
+        dutpassed = 0;
+      end
+      if (serialDataOut !== parallelDataOut[7]) begin
+        $display("Test serial in failed");
+        $display("Expected: %b", parallelDataOut[7]);
+        $display("Actual:   %b", serialDataOut);
         dutpassed = 0;
       end
     end

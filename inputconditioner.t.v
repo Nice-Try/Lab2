@@ -31,6 +31,7 @@ module testConditioner();
 
     $display("Begin testing inputconditioner.v");
 
+    // Bounce for a little bit before settling on 1
     $display("pin  | conditioned | rising | falling");
     for(i=0; i<7; i=i+1) begin
         pin=!pin; #10
@@ -41,6 +42,7 @@ module testConditioner();
     $display(" %b   | %b           | %b      | %b", pin, conditioned, rising, falling);
 
 
+    // Bounce for a little bit before settling on 0
     $display("\n");
     $display("pin  | conditioned | rising | falling");
     for(i=0; i<7; i=i+1) begin
