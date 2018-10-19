@@ -3,7 +3,10 @@
 //------------------------------------------------------------------------
 `include "inputconditioner.v"
 `include "shiftregister.v"
+`include "datamemory.v"
+`include "tristate.v"
 `include "fsm.v"
+`include "dff.v"
 
 module spiMemory
 (
@@ -19,6 +22,16 @@ wire conditioned_mosi;
 wire conditioned_cs;
 wire positive_edge;
 wire negative_edge;
+wire dm_we;
+wire miso_buff;
+wire addr_we;
+wire sr_we;
+wire serial_out;
+wire dffq;
+wire [7:0] shift_reg_out;
+wire [6:0] address;
+wire [7:0] data_mem_out;
+
 
 
 inputconditioner mosi_input(.clk(clk),
@@ -40,20 +53,36 @@ inputconditioner cs_input(.clk(clk),
                           .negativeedge());
 
 
+
 shiftregister shift(.clk(clk),
                     .peripheralClkEdge(positive_edge),
-                    .parallelLoad(),
-                    .parallelDataIn(),
+                    .parallelLoad(sr_we),
+                    .parallelDataIn(data_mem_out),
                     .serialDataIn(conditioned_mosi),
-                    .parallelDataOut(),
-                    .serialDataOut());
+                    .parallelDataOut(shift_reg_out),
+                    .serialDataOut(serial_out));
+
+datamemory dmem(.clk(clk),
+                .dataOut(data_mem_out),
+                .address(address),
+                .writeEnable(dm_we),
+                .dataIn(shift_reg_out));
+
+tristate tris(.in(dffq),
+              .enable(miso_buff),
+              .out(miso_pin));
+
+dff flip_flop(.trigger(clk),
+              .enable(negative_edge),
+              .d(serial_out),
+              .q(dffq));
 
 FSM dut(.sclk_edge(positive_edge),
         .CS(conditioned_cs),
-        .shiftRegOutP0(),
-        .miso_buff(),
-        .dm_we(),
-        .addr_we(),
-        .sr_we());
+        .shiftRegOutP0(shift_reg_out[0]),
+        .miso_buff(miso_buff),
+        .dm_we(dm_we),
+        .addr_we(addr_we),
+        .sr_we(sr_we));
 
 endmodule
