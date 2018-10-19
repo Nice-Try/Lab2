@@ -6,16 +6,13 @@ Carl Moser, Louise Nielsen, Camille Xue
 
 REMAINING DELIVERABLES
 - circuit diagram
-- test script that runs test bench and generates wave forms
 - wave forms
-- answer that timing question in more than a bullet point
 
 The input conditioner is tested with 2 main cases: short bounces between 0 and 1 at the begining and then settling to either 0 or 1. The noisy pin is flipped quickly between 0 and 1 6 times at the beginning of the test, and then the settles to 1. This shows how the input conditioner handles a noisy signal, how the conditioned output changes after the noise settles, and the positive edge being detected. The input remains high for some time before there is more noise and the signal settles to 0. This change between the 1 and the 0 allows the negative edge to trigger and also tests the debouncing when the conditioned output is already high.
 
-- maximum length input glitch suppressed by this
-50 MHZ -> 20 ns clock period
-20 ns * 10 waittime = 200 ns
+_If the main system clock is running at 50MHz, what is the maximum length input glitch that will be suppressed by this design for a waittime of 10?_
 
+We can convert the frequency into the time period for one cycle using the formula T = 1/f where f is 50 MHz. This gives us a period of 20 ns. The wait time is incremented on every positive clock edge so the time until the output would change would be 10 * 20 ns = 200 ns. The maximum length glitch that would be suppressed by this design would be just under 200 ns.
 
 ## Shift Register
 
