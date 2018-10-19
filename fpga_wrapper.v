@@ -19,6 +19,7 @@
 `timescale 1ns / 1ps
 
 `include "midpoint.v"
+`include "spimemory.v"
 
 
 //-----------------------------------------------------------------------------
@@ -27,19 +28,19 @@
 
 // D flip-flop with parameterized bit width (default: 1-bit)
 // Parameters in Verilog: http://www.asic-world.com/verilog/para_modules1.html
-module dff #( parameter W = 1 )
-(
-    input trigger,
-    input enable,
-    input      [W-1:0] d,
-    output reg [W-1:0] q
-);
-    always @(posedge trigger) begin
-        if(enable) begin
-            q <= d;
-        end
-    end
-endmodule
+// module dff #( parameter W = 1 )
+// (
+//     input trigger,
+//     input enable,
+//     input      [W-1:0] d,
+//     output reg [W-1:0] q
+// );
+//     always @(posedge trigger) begin
+//         if(enable) begin
+//             q <= d;
+//         end
+//     end
+// endmodule
 
 // JK flip-flop
 module jkff1
@@ -76,14 +77,14 @@ endmodule
 
 
 //-----------------------------------------------------------------------------
-// Main Lab 2 wrapper module
+// Main Lab 2 midpoint wrapper module
 //   Interfaces with switches, buttons, and LEDs on ZYBO board. Allows for two
 //   4-bit operands to be stored, and two results to be alternately displayed
 //   to the LEDs.
 //
 //-----------------------------------------------------------------------------
 
-module fpga_wrapper
+module fpga_wrapper_midpoint
 (
     input        clk,
     input  [2:0] sw,
@@ -109,5 +110,39 @@ module fpga_wrapper
                  .peripheralClkEdge(sw[1]),
                  .parallelDataOut(parallelDataOut),
                  .serialDataOut(serialDataOut));
+
+endmodule
+
+//-----------------------------------------------------------------------------
+// Main Lab 2 SPI memory wrapper module
+//   Interfaces with switches and LEDs on ZYBO board.
+//   To use:
+//   - Put chip select switch low
+//   - Input address serially (set value on MOSI switch, then cycle through
+//     SClk cycle with sclk switch). 7 bits long, most significant bits first
+//   - Input R/~W bit: high to read, low to write (same method as before)
+//   - If read, cycle through sclk with sclk switch and see data from memory at
+//     that address presented at every falling edge
+//   - If write, input data serially (8 bits)
+//   - Either begin again, or put chip select switch high
+//
+//-----------------------------------------------------------------------------
+
+module fpga_wrapper_spi_memory
+(
+  input        clk,
+  input [2:0]  sw,
+  output [3:0] led
+);
+
+  wire [3:0] leds;
+
+  spiMemory spi(.clk(clk),
+                .sclk_pin(sw[1]),
+                .cs_pin(sw[0]),
+                .miso_pin(sw[2]),
+                .mosi_pin(led[0]),
+                .leds(leds)
+                );
 
 endmodule
