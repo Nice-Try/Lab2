@@ -65,10 +65,17 @@ The outputs for each control signal for a given state are shown in the table bel
 
 ## SPI Memory Testing
 
-REMAINING DELIVERABLES:
-- working SPI memory
-- some way to test it
-- detailed analysis of our testing strategy
+### Test Sequence
+These are the steps a test engineer should follow to verify that our SPI module works as intended on an FPGA.
+Our switches are: 0. Chip Select, 1. Serial Clock, 2. MOSI
+1. Write to an Address
+ - Toggle Switch 0 so that it is off, sending a 0 for chip select
+ - Enter the address to write to by flipping switch 3 on or off if you want a 1 or 0, and turning switch 1 on in between each number to send each bit. For testing purposes use the address: 0000001. The address should only be 7 bits long.
+ - Flip Switch 2 off (and then Switch 1 to send the bit) in order to send a 0 as the R/W bit. This tells the SPI that it will be writing to the data memory.
+ - Using Switches 1 and 2, input the data you want to write. For the test: 0110101.
+ 
+2. Read from that Address
+
 
 ## Work Plan Reflection
 
