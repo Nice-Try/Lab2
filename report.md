@@ -71,3 +71,13 @@ REMAINING DELIVERABLES:
 - detailed analysis of our testing strategy
 
 ## Work Plan Reflection
+
+### Week 1
+
+Overall we didn't spend too much more time than we planned. One of our tasks, making the shift register took exactly as much time as we predicted. The input conditioner took about an hour longer than we predicted and we ended up finishing it by the end of our Wednesday meeting. The shift register and test was done by the time of our meeting as planned. We also did work on the midpoint like we planned, but that also took about 1.5 more hours than we allocated since we worked past our meeting end time and went to NINJA hours the next day to debug the FPGA testing aspect. Generally, we weren't as far off with our planning compared to our work plan for the last lab. 
+
+### Week 2
+
+We didn't meet our deadlines for the tasks related to making the SPI memory. The FSM was diagramed out on Monday and then created on Tuesday instead of both of those being done by Sunday. It also took about 1 hour longer than anticipated because it was broken up into those two steps. Testing the FSM also proved to be a task itself that we didn't explicitly allocate time for, which took about an hour.  The SPI memory module wasn't done until Thursday night since we had spent most of Wednesday finishing up the FSM. When the SPI module was worked on and completed, it took only about 30 minutes more than we thought it would, which was good. For the report, we spent approximately the same amount of time as was allocated and we did do it on Thursday, which was what we set on our workplan.
+
+Considering all of the tasks of Week 2, we didn't do a great job of following our own deadlines. This wasn't really a problem in the planning but more in the excecution, probably because we weren't all constantly referring to our original workplan to see if we were on track or not. In the future we will make sure to check our workplan more often to make sure we don't fall behind. We'll also try to refine our time prediction for tasks even further, primarily by setting aside more time for testing and debugging.
