@@ -64,6 +64,8 @@ The outputs for each control signal for a given state are shown in the table bel
 | `WRITE_DM` | 0 | 1 | 0 | 0 |
 | `FINAL` | 0 | 0 | 0 | 0 |
 
+We created a test bench to test our FPGA, and it passed all of our tests and transitioned from state to state appropriately based on given inputs. 
+
 ## SPI Memory Testing
 
 ### Test Sequence
@@ -78,6 +80,7 @@ Our LEDs are:
 - 1: `addr_we` OR `sr_we`
 - 2: `dm_we`
 - 3: `miso_buff`
+
 
 1. Write to an Address
  - Turn Chip Select off to send a 0
@@ -94,10 +97,12 @@ Our LEDs are:
  
  Use these steps to check the following test cases.
  
- 1. Write Data: 10101010 to Address: 0000001. Read the data at this address. You should expect to see 10101010 as the output.
- 2. Read the data at the Address: 0101010. You should expect to see all 0's because no data should be written to this address.
- 3. Write Data: 00110010 to Address: 0001000 but turn on Chip Select in the middle of the process. This should make the SPI go back to its idle state and LED[3:1] should be 000. 
+1. Write Data: 10101010 to Address: 0000001. Read the data at this address. You should expect to see 10101010 as the output.
+2. Read the data at the Address: 0101010. You should expect to see all 0's because no data should be written to this address.
+3. Write Data: 00110010 to Address: 0001000 but turn on Chip Select in the middle of the process. This should make the SPI go back to its idle state and LED[3:1] should be 000. 
  
+### Curent Status
+On our FPGA, the SPI memory does seem to be transitioning from the states IDLE > ADDR > R/~W > WRITE > WRITE_DM as expected based on our LED outputs, but when we try to read the MISO output, it does not go to the correct state based after the R/~W state. We think this might be problem with indexing maybe so the R/~W bit isn't actually being set to 1 at the right time based on what the SPI memory sees. We did test our FSM separately from the SPI, and it passed all of our tests, so we are pretty sure the problem is somewhere in the SPI module. 
  
 ## Work Plan Reflection
 
