@@ -37,6 +37,8 @@ module testFSM();
           WRITE_DM = 4'b0100;
 
   initial begin
+  $dumpfile("fsm.vcd");
+  $dumpvars(0, dut);
     // Set CS to 1, wait clock cycle
     shiftRegOutP0 = 1;
     CS = 1; #25
