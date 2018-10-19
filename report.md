@@ -6,16 +6,14 @@ Carl Moser, Louise Nielsen, Camille Xue
 
 REMAINING DELIVERABLES
 - circuit diagram
-- test script that runs test bench and generates wave forms
-- wave forms
-- answer that timing question in more than a bullet point
 
 The input conditioner is tested with 2 main cases: short bounces between 0 and 1 at the begining and then settling to either 0 or 1. The noisy pin is flipped quickly between 0 and 1 6 times at the beginning of the test, and then the settles to 1. This shows how the input conditioner handles a noisy signal, how the conditioned output changes after the noise settles, and the positive edge being detected. The input remains high for some time before there is more noise and the signal settles to 0. This change between the 1 and the 0 allows the negative edge to trigger and also tests the debouncing when the conditioned output is already high.
 
-- maximum length input glitch suppressed by this
-50 MHZ -> 20 ns clock period
-20 ns * 10 waittime = 200 ns
+![Input Conditioner Waveform](input_condition_wave.png)
 
+_If the main system clock is running at 50MHz, what is the maximum length input glitch that will be suppressed by this design for a waittime of 10?_
+
+We can convert the frequency into the time period for one cycle using the formula T = 1/f where f is 50 MHz. This gives us a period of 20 ns. The wait time is incremented on every positive clock edge so the time until the output would change would be 10 * 20 ns = 200 ns. The maximum length glitch that would be suppressed by this design would be just under 200 ns.
 
 ## Shift Register
 
@@ -46,7 +44,7 @@ These are the steps a test engineer should follow to verify that our midpoint mo
 
 ## Finite State Machine
 
-![Finite State Machine Diagram](https://image.ibb.co/mfthff/fsm-diagram.png)
+![Finite State Machine Diagram](https://image.ibb.co/nxGY30/fsm-diagram.png)
 
 Our Finite State Machine determines the control signals `miso_buff` (MISO buffer), `dm_we` (write enable for data memory), `addr_we` (write enable for address latch), and `sr_we` (write enable/parallel load for shift register) based on what state it is in. The flow between states is shown in the above diagram. The FSM ensures that the SPI is doing the right things at the right time, and it does that by keeping track of how many serial clock cycles have gone by using a counter. Because we are using a counter, this is not a pure state machine. When Chip Select goes low for the first time, it goes into the first state `ADDR`. At this point, the MOSI pin is sending 7 bits for the address. It stays in this state until the counter is 8 and the full address has gone by. The next bit is the `R/~W` bit or the `ShiftRegOutP[0]` value, which determines whether the SPI should be reading or writing. When this bit is 1, it will read, otherwise it will write.
 
@@ -68,9 +66,47 @@ The outputs for each control signal for a given state are shown in the table bel
 
 ## SPI Memory Testing
 
-REMAINING DELIVERABLES:
-- working SPI memory
-- some way to test it
-- detailed analysis of our testing strategy
+### Test Sequence
+These are the steps a test engineer should follow to verify that our SPI module works as intended on an FPGA.
+Our switches are: 
+- 0: Chip Select
+- 1: Serial Clock
+- 2: MOSI
 
+Our LEDs are:
+- 0: MISO
+- 1: `addr_we` OR `sr_we`
+- 2: `dm_we`
+- 3: `miso_buff`
+
+1. Write to an Address
+ - Turn Chip Select off to send a 0
+ - Enter the address to write to by flipping the MISO switch on or off based on if you want a 1 or 0. To send each bit, cycle serial clock. Do this for each bit in the 7 bit address.
+ - Turn MOSI off to send a 0 as the R/~W bit. This tells the SPI that it will be writing to the data memory.
+ - Enter your data in the same way as the address using the MISO and serial clock switches. The data is 8-bits long.
+ - While entering the data, LED[3:1] indicate the current state of the SPI. After the first cycle for the first data bit, LED[3:1] should be 000. For the 8th cycle 010, and when the entire operation is done it will be 000 again. 
+ 
+2. Read from an Address
+ - Turn Chip Select off to send a 0
+ - Enter the address to write to by flipping the MISO switch on or off based on if you want a 1 or 0. To send each bit, cycle serial clock. Do this for each bit in the 7 bit address.
+ - Turn MOSI on to send a 1 as the R/~W bit. This tells the SPI that it will be reading from the data memory.
+ - Cycle the serial clock 8 times, making note of the state LED[0] after each cycle. Those 8 values of LED[0] are the data from data memory at the address given. After the first cycle, LED[3:1] should read 101; the remaining 7 cycles it should read 100. After the read operation is complete, LED[3:0] should be 000. 
+ 
+ Use these steps to check the following test cases.
+ 
+ 1. Write Data: 10101010 to Address: 0000001. Read the data at this address. You should expect to see 10101010 as the output.
+ 2. Read the data at the Address: 0101010. You should expect to see all 0's because no data should be written to this address.
+ 3. Write Data: 00110010 to Address: 0001000 but turn on Chip Select in the middle of the process. This should make the SPI go back to its idle state and LED[3:1] should be 000. 
+ 
+ 
 ## Work Plan Reflection
+
+### Week 1
+
+Overall we didn't spend too much more time than we planned. One of our tasks, making the shift register took exactly as much time as we predicted. The input conditioner took about an hour longer than we predicted and we ended up finishing it by the end of our Wednesday meeting. The shift register and test was done by the time of our meeting as planned. We also did work on the midpoint like we planned, but that also took about 1.5 more hours than we allocated since we worked past our meeting end time and went to NINJA hours the next day to debug the FPGA testing aspect. Generally, we weren't as far off with our planning compared to our work plan for the last lab. 
+
+### Week 2
+
+We didn't meet our deadlines for the tasks related to making the SPI memory. The FSM was diagramed out on Monday and then created on Tuesday instead of both of those being done by Sunday. It also took about 1 hour longer than anticipated because it was broken up into those two steps. Testing the FSM also proved to be a task itself that we didn't explicitly allocate time for, which took about an hour.  The SPI memory module wasn't done until Thursday night since we had spent most of Wednesday finishing up the FSM. When the SPI module was worked on and completed, it took only about 30 minutes more than we thought it would, which was good. For the report, we spent approximately the same amount of time as was allocated and we did do it on Thursday, which was what we set on our workplan.
+
+Considering all of the tasks of Week 2, we didn't do a great job of following our own deadlines. This wasn't really a problem in the planning but more in the excecution, probably because we weren't all constantly referring to our original workplan to see if we were on track or not. In the future we will make sure to check our workplan more often to make sure we don't fall behind. We'll also try to refine our time prediction for tasks even further, primarily by setting aside more time for testing and debugging.

@@ -29,7 +29,7 @@ wire sr_we;
 wire serial_out;
 wire dffq;
 wire [7:0] shift_reg_out;
-wire [6:0] address;
+wire [7:0] address;
 wire [7:0] data_mem_out;
 
 
@@ -64,7 +64,7 @@ shiftregister shift(.clk(clk),
 
 datamemory dmem(.clk(clk),
                 .dataOut(data_mem_out),
-                .address(address),
+                .address(address[6:0]),
                 .writeEnable(dm_we),
                 .dataIn(shift_reg_out));
 
@@ -76,6 +76,11 @@ dff flip_flop(.trigger(clk),
               .enable(negative_edge),
               .d(serial_out),
               .q(dffq));
+
+dff #(8) addr_lat(.trigger(clk),
+              .enable(addr_we),
+              .d(shift_reg_out),
+              .q(address));
 
 FSM dut(.sclk_edge(positive_edge),
         .CS(conditioned_cs),
