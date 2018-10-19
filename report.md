@@ -44,7 +44,7 @@ These are the steps a test engineer should follow to verify that our midpoint mo
 
 ## Finite State Machine
 
-![Finite State Machine Diagram](https://image.ibb.co/mfthff/fsm-diagram.png)
+![Finite State Machine Diagram](https://image.ibb.co/nxGY30/fsm-diagram.png)
 
 Our Finite State Machine determines the control signals `miso_buff` (MISO buffer), `dm_we` (write enable for data memory), `addr_we` (write enable for address latch), and `sr_we` (write enable/parallel load for shift register) based on what state it is in. The flow between states is shown in the above diagram. The FSM ensures that the SPI is doing the right things at the right time, and it does that by keeping track of how many serial clock cycles have gone by using a counter. Because we are using a counter, this is not a pure state machine. When Chip Select goes low for the first time, it goes into the first state `ADDR`. At this point, the MOSI pin is sending 7 bits for the address. It stays in this state until the counter is 8 and the full address has gone by. The next bit is the `R/~W` bit or the `ShiftRegOutP[0]` value, which determines whether the SPI should be reading or writing. When this bit is 1, it will read, otherwise it will write.
 
@@ -66,10 +66,17 @@ The outputs for each control signal for a given state are shown in the table bel
 
 ## SPI Memory Testing
 
-REMAINING DELIVERABLES:
-- working SPI memory
-- some way to test it
-- detailed analysis of our testing strategy
+### Test Sequence
+These are the steps a test engineer should follow to verify that our SPI module works as intended on an FPGA.
+Our switches are: 0. Chip Select, 1. Serial Clock, 2. MOSI
+1. Write to an Address
+ - Toggle Switch 0 so that it is off, sending a 0 for chip select
+ - Enter the address to write to by flipping switch 3 on or off if you want a 1 or 0, and turning switch 1 on in between each number to send each bit. For testing purposes use the address: 0000001. The address should only be 7 bits long.
+ - Flip Switch 2 off (and then Switch 1 to send the bit) in order to send a 0 as the R/W bit. This tells the SPI that it will be writing to the data memory.
+ - Using Switches 1 and 2, input the data you want to write. For the test: 0110101.
+ 
+2. Read from that Address
+
 
 ## Work Plan Reflection
 
